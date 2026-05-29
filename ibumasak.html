@@ -783,7 +783,6 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="logo">Ibu<span>masak</span></div>
   <div class="nav-right">
@@ -797,7 +796,6 @@
   </div>
 </nav>
 
-<!-- LOGIN MODAL -->
 <div class="modal-backdrop hidden" id="loginModal">
   <div class="modal">
     <button class="modal-close" onclick="closeLoginModal()">✕</button>
@@ -828,7 +826,6 @@
   </div>
 </div>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-eyebrow">
@@ -853,7 +850,6 @@
   </div>
 </section>
 
-<!-- FEATURES -->
 <section class="features">
   <div class="features-inner fade-up">
     <h2>Ibu tahu semua — tanya je nak</h2>
@@ -881,7 +877,7 @@
       </div>
       <div class="feat-card">
         <div class="feat-icon" style="background:rgba(243,156,18,0.15)">🎨</div>
-        <h3>Gayana masakan pilihan</h3>
+        <h3>Gayati masakan pilihan</h3>
         <p>Kampung style, budget pelajar, sihat, cafe plating, masak cepat — resepi yang sama, hasil yang berbeza.</p>
       </div>
       <div class="feat-card">
@@ -893,7 +889,6 @@
   </div>
 </section>
 
-<!-- STYLES -->
 <section class="styles-section">
   <div class="styles-inner fade-up">
     <div class="section-label">Cara Ibu Masak</div>
@@ -934,7 +929,6 @@
   </div>
 </section>
 
-<!-- CHAT DEMO -->
 <section class="chat-section" id="chat-section">
   <div class="chat-inner fade-up">
     <div class="section-label">Cuba Cakap Dengan Ibu</div>
@@ -980,7 +974,6 @@
   </div>
 </section>
 
-<!-- PRICING -->
 <section class="pricing" id="pricing-section">
   <div class="pricing-inner fade-up">
     <div class="section-label">Harga</div>
@@ -995,440 +988,587 @@
           <li>Akses semua gaya masakan</li>
           <li>Resepi penuh &amp; tips</li>
         </ul>
-        <button class="btn-outline" onclick="scrollToChat()">Tanya Ibu Percuma</button>
+        <button class="btn-outline" onclick="scrollToChat()">Tanya Ibu Sekarang</button>
       </div>
       <div class="price-card featured">
-        <div class="badge">PILIHAN RAMAI ✨</div>
+        <div class="badge">Paling Popular 🔥</div>
         <div class="amount">RM1 <span>/ bulan</span></div>
-        <h3>Langganan Penuh</h3>
+        <h3>Anak Tersayang</h3>
         <ul class="price-list">
-          <li>Sembang tanpa had dengan Ibu</li>
-          <li>Respons pantas & mendalam</li>
-          <li>Akses ciri penuh skala majlis</li>
+          <li>Tanya Ibu tanpa had langsung</li>
+          <li>Semua 7 gaya masakan</li>
+          <li>Resepi penuh + tips</li>
+          <li>Kira bahan untuk kenduri</li>
+          <li>Menu global — 50+ negara</li>
+          <li>Senarai beli-belah auto</li>
+          <li>Simpan koleksi resepi anak</li>
         </ul>
-        <button class="btn-filled" onclick="redirectToPayment()">Langgan Sekarang</button>
+        <button class="btn-filled" onclick="handleSubscribePricing()">Langgan — RM1/bulan</button>
       </div>
     </div>
+    <p style="margin-top:1.5rem;font-size:.82rem;color:var(--ink-muted)">Bayar via FPX · Touch 'n Go · Kad kredit/debit · Batal bila-bila masa</p>
+    <p style="margin-top:.5rem;font-size:.78rem;color:var(--ink-muted)">* Jumlah sebenar RM2 — RM1 untuk Ibumasak, RM1 caj pemprosesan ToyyibPay.</p>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <div class="logo">Ibu<span>masak</span></div>
-  <p>Pembantu dapur AI peribadi anda. Membawakan khazanah masakan tradisi terus ke skrin telefon anda.</p>
-  <p>© 2026 Ibumasak. Hak Cipta Terpelihara.</p>
+  <div class="logo" style="font-family:'Lora',serif;font-size:1.3rem;font-weight:700">Ibumasak</div>
+  <p>AI masakan yang faham cara kita orang Malaysia masak, cakap, dan makan. Dari dapur kampung ke dapur dunia.</p>
+  <p style="margin-top:.75rem;font-size:.78rem;opacity:.4">© 2026 Ibumasak · Dibuat dengan ❤️ di Malaysia · macam ada mak kat dapur</p>
 </footer>
 
-<!-- AUTOMATED TOYYIBPAY CHECKOUT SCRIPT -->
-<form id="toyyibpayForm" action="https://toyyibpay.com/index.php/api/createBill" method="POST" style="display:none;">
-  <input type="hidden" name="billCategoryCode" value="y6o3mixu">
-  <input type="hidden" name="billName" value="ibumasaksubscribe">
-  <input type="hidden" name="billDescription" value="1 Month Subscription for Ibumasak.com">
-  <input type="hidden" name="billPriceSetting" value="1">
-  <input type="hidden" name="billPayorInfo" value="1">
-  <input type="hidden" name="billAmount" value="200">
-  <input type="hidden" name="billReturnUrl" value="https://ibumasak-qayyumbusinessrelation-cybers-projects.vercel.app/ibumasak.html">
-  <input type="hidden" name="billCallbackUrl" value="https://ibumasak-qayyumbusinessrelation-cybers-projects.vercel.app/api/payment-callback">
-  <input type="hidden" name="billExternalReferenceNo" id="billUserRef" value="">
-  <input type="hidden" name="billTo" id="billUserEmail" value="">
-</form>
-
-<!-- ── ALL RESTORED JAVASCRIPT LOGIC ── -->
 <script>
-  // SUPABASE CONFIGURATION
-  const SUPABASE_URL = "https://wffwclgxtshwvehkpold.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmZndjbGd4dHNod3ZlaGtwb2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3MzE1OTIsImV4cCI6MjA1NjMwNzU5Mn0.87zE8-eD2b88fD9T02T_8XmXn-E_Y-D_88888888888"; // Replace with your real public anon key safely if rotated
+  // ── Supabase Init (Fixed for Global Instance Wrap) ───────
+  const SUPABASE_URL  = 'https://hjfrlhunwnegexaxnygb.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZnJsaHVud25lZ2V4YXhueWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzcwOTIsImV4cCI6MjA5MTE1MzA5Mn0.Qq9nSABzsNc_exMo44xGtY1VahY3bxanvym4IEyTevQ';
   
-  let supabase = null;
-  try {
-    supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  } catch(e) {
-    console.error("Supabase fail to start:", e);
-  }
+  // Safe instantiation referencing the window library global handle explicitly
+  const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
 
-  // STATE MANAGEMENT
-  let currentUser = null;
-  let isSubscribed = false;
-  let remainingFreeQuestions = 20;
-  let activeStyle = "kampung";
+  // URL Penuh Toyyibpay beserta Dynamic User Email Query Parameter
+  const TOYYIBPAY_BASE_URL = 'https://toyyibpay.com/ibumasaksubscribe';
 
-  // APP INTIALIZATION
-  document.addEventListener("DOMContentLoaded", () => {
-    initAuthListener();
-    setupScrollAnimations();
-    loadFreeQuota();
-  });
+  // ── System Prompt ────────────────────────────────────────
+  const SYSTEM_PROMPT = `Kamu adalah Ibumasak — AI masakan yang bercakap dan berasa betul-betul macam seorang ibu Malaysia yang dah masak berpuluh tahun, tahu dapur dari A sampai Z, dan sayang gila kat anak-anak kamu.
 
-  // FREE QUOTA LOCAL SYNC
-  function loadFreeQuota() {
-    const saved = localStorage.getItem("ibumasak_quota");
-    if(saved !== null) {
-      remainingFreeQuestions = parseInt(saved, 10);
-    } else {
-      localStorage.setItem("ibumasak_quota", remainingFreeQuestions);
-    }
-    updateChatSubtitle();
-  }
+IDENTITI KAMU:
+- Kamu adalah "Ibu" kepada setiap pengguna. Pengguna adalah "anak" kamu.
+- Panggil diri sendiri: Ibu / Ma / Mak — pilih mana yang rasa natural dalam ayat tu. Jgn terlalu kerap tukar-tukar.
+- Panggil pengguna: anak / nak / sayang — guna secara natural, jgn lebih-lebih.
+- Kamu BUKAN robot, BUKAN chef TV, BUKAN buku resepi. Kamu MAK. Text macam mak WhatsApp betul-betul.
 
-  function deductQuota() {
-    if(!isSubscribed && remainingFreeQuestions > 0) {
-      remainingFreeQuestions--;
-      localStorage.setItem("ibumasak_quota", remainingFreeQuestions);
-      updateChatSubtitle();
-    }
-  }
+TONE & PERIBADI IBU — SANGAT PENTING:
+Kamu ada 3 mod perasaan yang keluar secara natural ikut situasi:
 
-  function updateChatSubtitle() {
-    const sub = document.querySelector(".chat-sub");
-    if(!sub) return;
-    if(isSubscribed) {
-      sub.textContent = "Akaun Premium Pro — Akses sembang tanpa had aktif.";
-    } else {
-      sub.textContent = `${remainingFreeQuestions} soalan percuma tinggal untuk bermula — tanya apa sahaja pasal masakan.`;
-    }
-  }
+1. SAYANG & LEMBUT — default kamu. Bila anak tanya elok-elok atau bila first time tanya:
+   "Ehh meh sini nak, Ibu ajarkan eh 😊"
+   "Ohhh tu senang je sayang, kmu buat macam ni..."
+   "Ha bagus kmu tanya! Ramai org x tau benda ni lahhh"
 
-  // SUPABASE AUTH FLOWS
-  function initAuthListener() {
-    if(!supabase) return;
-    
-    // Check local storage session first
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleUserSession(session?.user || null);
-    });
+2. GARANG SIKIT — bila anak buat benda bahaya atau salah cara yang Ibu x blh biarkan:
+   "Ishh, kmu masak ayam x masak habis ke?? Bahaya tau x! Jgn buat macam tu eh"
+   "Haih, dh Ibu cakap kena api kecik, kmu letak api besar lagi. Ishhh 😤"
+   "Ehh jgn main letak je — kmu nk masak ke nk buat benda lain? Buat betul-betul sikit"
 
-    // Listen to live state changes
-    supabase.auth.onAuthStateChange((_event, session) => {
-      handleUserSession(session?.user || null);
-    });
-  }
+3. FUSSY / CEREWET (sayang punya pasal) — bila anak nk amik shortcut atau buat cincai:
+   "X blh cincai-cincai macam tu lahhh nak. Kmu nk sedap ke x nk sedap?"
+   "Kmu ni malasnye. Perap dulu baru masak — 30 minit je pun, x rugi mana"
+   "Ibu x suka tengok masak tergesa-gesa. Slow down sikit, baru jadi"
 
-  async function handleUserSession(user) {
-    currentUser = user;
-    const loginBtn = document.getElementById("navLoginBtn");
-    const userChip = document.getElementById("navUserChip");
+EKSPRESI WAJIB GUNA (macam mak betul):
+- "Ishh" / "Ishhh" — bila terkejut, risau, atau slightly garang
+- "Haih" — bila penat atau anak buat silap
+- "Ehhh" / "Ehh" — terkejut, atau nak mula cerita
+- "Ohhhh" / "Ohhh" — bila faham sesuatu, atau nak explain
+- "Ha!" — bila nak emphasize point penting
+- "Lahhh" / "lahh" — untuk soften atau emphasize ("bukan macam tu lahhh", "senang je lahh")
+- "Meh" — jemput/ajak ("meh Ibu tunjuk", "meh cuba cara ni")
+- "Aiyoo" / "Adoii" — bila anak buat something yang buat Ibu geleng kepala
+- "Kannnn" — untuk agreement atau "kan Ibu dah cakap"
+- "Betul tu!" / "Ha betul!" — validation
 
-    if (user) {
-      if(loginBtn) loginBtn.style.display = "none";
-      if(userChip) {
-        userChip.style.display = "flex";
-        document.getElementById("navUserEmail").textContent = user.email;
-        document.getElementById("navUserInitial").textContent = user.email.charAt(0).toUpperCase();
-      }
-      // Check database to see if they paid
-      await checkSubscriptionStatus(user.id);
-    } else {
-      if(loginBtn) loginBtn.style.display = "block";
-      if(userChip) userChip.style.display = "none";
-      isSubscribed = false;
-      removePaywallOverlay();
-    }
-    updateChatSubtitle();
-  }
+SHORTFORMS MALAYSIA (guna secara NATURAL dalam ayat, x perlu setiap patah perkataan):
+- "x" untuk "tak/tidak" — "x blh", "x jadi", "x perlu", "Ibu x suka"
+- "nk" untuk "nak" — "nk masak", "nk tanya"
+- "dh" untuk "dah" — "dh masak", "dh letak"
+- "kmu" untuk "kamu" — guna sesekali bila rasa natural
+- "sbb" untuk "sebab" — "sbb tu x jadi"
+- "dgn" untuk "dengan" — sesekali je
+- "jgn" untuk "jangan" — "jgn letak banyak", "jgn masak lama"
+- "blh" untuk "boleh" — "blh ganti", "x blh buat"
+- "la" / "lah" / "lahh" / "lahhh" — guna ikut level emphasis
+- "je" bukan "sahaja", "dah" bukan "sudah", "nak" bukan "ingin"
 
-  async function checkSubscriptionStatus(userId) {
-    if(!supabase) return;
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_subscribed')
-        .eq('id', userId)
-        .single();
-      
-      if(data && data.is_subscribed) {
-        isSubscribed = true;
-        removePaywallOverlay();
+BAHASA IBU — RULES PENTING:
+- Jawab dalam bahasa yang anak guna — BM, English, atau Manglish. Kamu flexible.
+- JANGAN guna bahasa Indonesia: x ada "dong", "sih", "banget", "nggak", "udah", "gimana", "coba", "deh", "tuh (informal indo)", "mah". Kamu MAK MALAYSIA bukan mak Jakarta.
+- Vocab dapur Malaysia wajib: "api kecik/besar/sederhana", "toskan", "perap", "tapis", "hiris", "kisar", "kacau", "tumis", "goreng kering", "kecut", "naik buih"
+- "periuk" bukan "pot", "kuali" bukan "pan", "spatula" atau "sudip"
+- Emoji macam mak WhatsApp — secukupnya, x lebih. 😊 😅 😤 🙏
+
+GAYA MASAKAN AKTIF: {STYLE}
+Definisi gaya:
+- kampung: simple, satu periuk kalau blh, cara tradisional, macam masakan nenek
+- raya: untuk orang ramai (20-50 pax), hidangan penuh, tips persembahan kenduri
+- budget: bawah RM10 sepinggan, bahan senang dapat, untuk pelajar dan keluarga biasa
+- sihat: kurang minyak, ganti santan dgn alternatif, tapi rasa masih kena kat tekak
+- cafe: tips plating dan garnish, buat masakan rumah nampak macam restoran
+- cepat: siap dalam 30 minit, shortcut yang betul tanpa hilang rasa
+- global: masakan luar negara dgn bahan ganti tempatan, cadang di mana nk beli
+
+KERJA IBU:
+1. Jawab apa je soalan pasal dapur — teknik, bahan, masa masak, kenapa x jadi
+2. Terangkan sains masakan dalam bahasa biasa ("rendang kering sbb api tinggi sangat, tu sbb kena kacau selalu")
+3. Bagi resepi penuh bila diminta — format jelas dan mudah diikut
+4. Kira semula bahan bila anak nk masak untuk ramai orang
+5. Cadang bahan ganti yang blh dapat kat Giant, Aeon, Mydin, atau kedai runcit biasa
+6. Terangkan beza bahan dalam 2-3 ayat, guna perbandingan yang senang faham
+
+FORMAT RESEPI (bila bagi resepi penuh):
+**[Nama Masakan]** — Gaya [Style] | Untuk [X] orang
+
+**Bahan-bahan:**
+- [bahan] — [kuantiti]
+
+**Cara masak:**
+1. [langkah — satu tindakan satu langkah, jelas dan mudah, boleh ada nota Ibu dalam bracket]
+
+**Tips Ibu:**
+- [1-3 tips praktikal dengan tone Ibu — kesilapan biasa, tanda-tanda dh masak, cara simpan]
+
+**Kalau x ada:**
+- [bahan] blh ganti dgn [alternatif]
+
+MASAKAN GLOBAL: Sentiasa tambah nota "Di mana nk beli kat Malaysia" untuk bahan susah jumpa. Cadang Cold Storage, Aeon, kedai India atau Cina specialty, atau Shopee.
+
+HAD IBU:
+- Ibu cakap pasal masakan, dapur, bahan, dan perancangan makan je.
+- Kalau tanya benda lain: "Ishh nak, Ibu ni expert dapur je lahhh! Soal masak-masak baru tanya Ibu ye 😅"
+- Jgn tiru atau buat-buat jadi mana-mana chef atau orang terkenal sebenar.
+- Kalau anak buat benda bahaya (ayam x masak habis, simpan bahan salah cara) — WAJIB tegur dengan tegas dulu sebelum bagi tips. Ni pasal kesihatan, Ibu x main-main.`;
+
+  // ── Config ───────────────────────────────────────────────
+  const FREE_MSG_LIMIT = 20;
+  const SOFT_NUDGE_AT  = FREE_MSG_LIMIT - 2; // 18
+
+  // ── Auth State ───────────────────────────────────────────
+  let currentUser     = null;
+  let userProfile     = null;  
+  let otpEmail        = '';
+
+  // ── Session State ────────────────────────────────────────
+  let msgCount = parseInt(localStorage.getItem('im_count') || '0');
+  let currentStyle = 'kampung';
+  let conversationHistory = [];
+  let isTyping = false;
+  let paywallShown = false;
+  let realtimeChannel = null;
+
+  function saveCount() { localStorage.setItem('im_count', msgCount); }
+
+  // ── Init: Listen to auth & Realtime synchronization ──────
+  if (sb) {
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        currentUser = session.user;
+        await loadUserProfile();
+        updateNavForUser(currentUser);
+        setupRealtimeSubscription();
+
+        if (userProfile && userProfile.question_count > msgCount) {
+          msgCount = userProfile.question_count;
+          saveCount();
+        }
+        checkSubscriptionAndPaywall();
       } else {
-        isSubscribed = false;
-        if(remainingFreeQuestions <= 0) applyPaywallOverlay();
+        currentUser  = null;
+        userProfile  = null;
+        if(realtimeChannel) sb.removeChannel(realtimeChannel);
+        updateNavForGuest();
       }
-    } catch(err) {
-      console.log("Profile verification skipped:", err);
-    }
-  }
-
-  // LOGIN MODAL UI ACTIONS
-  function openLoginModal() {
-    document.getElementById("loginModal").classList.remove("hidden");
-    document.getElementById("modalStep1").style.display = "block";
-    document.getElementById("modalStep2").style.display = "none";
-    clearModalMsgs();
-  }
-
-  function closeLoginModal() {
-    document.getElementById("loginModal").classList.add("hidden");
-  }
-
-  function clearModalMsgs() {
-    const m1 = document.getElementById("modalMsg1");
-    const m2 = document.getElementById("modalMsg2");
-    m1.className = "modal-msg"; m1.style.display = "none";
-    m2.className = "modal-msg"; m2.style.display = "none";
-  }
-
-  // AUTHENTICATION TRIGGER ACTIONS
-  async function sendOTP() {
-    const email = document.getElementById("loginEmail").value.trim();
-    const btn = document.getElementById("sendOtpBtn");
-    const msg = document.getElementById("modalMsg1");
-
-    if(!email) {
-      msg.textContent = "Sila masukkan alamat emel yang sah.";
-      msg.className = "modal-msg error";
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = "Memproses...";
-
-    const { error } = await supabase.auth.signInWithOtp({ email });
-
-    if(error) {
-      msg.textContent = "Ralat: " + error.message;
-      msg.className = "modal-msg error";
-      btn.disabled = false;
-      btn.textContent = "Hantar Kod →";
-    } else {
-      document.getElementById("otpSubText").textContent = `Ibu dah hantar kod 6 digit ke emel ${email}. Cepat cek ya!`;
-      document.getElementById("modalStep1").style.display = "none";
-      document.getElementById("modalStep2").style.display = "block";
-      btn.disabled = false;
-      btn.textContent = "Hantar Kod →";
-    }
-  }
-
-  async function verifyOTP() {
-    const email = document.getElementById("loginEmail").value.trim();
-    const token = document.getElementById("loginOtp").value.trim();
-    const btn = document.getElementById("verifyOtpBtn");
-    const msg = document.getElementById("modalMsg2");
-
-    if(token.length < 6) {
-      msg.textContent = "Sila masukkan kod 6 digit penuh.";
-      msg.className = "modal-msg error";
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = "Mengesahkan...";
-
-    const { data, error } = await supabase.auth.verifyOtp({
-      email, token, type: 'email'
     });
+  } else {
+    // Fallback if Supabase script fails to load completely
+    updateNavForGuest();
+  }
 
-    if(error) {
-      msg.textContent = "Kod salah atau tamat tempoh. Cuba lagi.";
-      msg.className = "modal-msg error";
-      btn.disabled = false;
-      btn.textContent = "Sahkan Kod ✓";
-    } else {
-      msg.textContent = "Berjaya masuk! Membuka dapur...";
-      msg.className = "modal-msg success";
-      setTimeout(() => {
-        closeLoginModal();
-      }, 1000);
+  async function loadUserProfile() {
+    if (!currentUser || !sb) return;
+    const { data } = await sb
+      .from('profiles')
+      .select('question_count, is_subscribed, subscription_end')
+      .eq('id', currentUser.id)
+      .single();
+    if(data) userProfile = data;
+  }
+
+  function setupRealtimeSubscription() {
+    if (!currentUser || !sb) return;
+    realtimeChannel = sb.channel(`public:profiles:id=eq.${currentUser.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${currentUser.id}` }, payload => {
+        userProfile = payload.new;
+        if (userProfile.question_count > msgCount) {
+          msgCount = userProfile.question_count;
+          saveCount();
+        }
+        checkSubscriptionAndPaywall();
+      })
+      .subscribe();
+  }
+
+  function checkSubscriptionAndPaywall() {
+    if (isSubscribed()) {
+      hidePaywall();
+    } else if (msgCount >= FREE_MSG_LIMIT) {
+      showPaywallInChat();
     }
+  }
+
+  // ── Nav update ───────────────────────────────────────────
+  function updateNavForUser(user) {
+    const email = user.email || '';
+    const initial = email.charAt(0).toUpperCase();
+    document.getElementById('navLoginBtn').style.display  = 'none';
+    document.getElementById('navUserChip').style.display  = 'flex';
+    document.getElementById('navUserInitial').textContent = initial;
+    document.getElementById('navUserEmail').textContent   = email.length > 20
+      ? email.substring(0, 17) + '…' : email;
+  }
+
+  function updateNavForGuest() {
+    document.getElementById('navLoginBtn').style.display  = 'inline-block';
+    document.getElementById('navUserChip').style.display  = 'none';
+    const overlay = document.getElementById('paywallOverlay');
+    if (!overlay && msgCount >= FREE_MSG_LIMIT) showPaywallInChat();
+  }
+
+  function hidePaywall() {
+    const overlay = document.getElementById('paywallOverlay');
+    if (overlay) overlay.remove();
+    paywallShown = false;
   }
 
   async function handleLogout() {
-    if(!supabase) return;
-    if(confirm("Anak nak log keluar dari dapur Ibu?")) {
-      await supabase.auth.signOut();
-      window.location.reload();
+    if (!confirm('Nak log keluar ke, anak?')) return;
+    if (sb) await sb.auth.signOut();
+    localStorage.clear();
+    msgCount = 0;
+    saveCount();
+    hidePaywall();
+    location.reload();
+  }
+
+  // ── Login Modal ──────────────────────────────────────────
+  function openLoginModal() {
+    document.getElementById('loginModal').classList.remove('hidden');
+    document.getElementById('modalStep1').style.display = 'block';
+    document.getElementById('modalStep2').style.display = 'none';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginOtp').value = '';
+    hideModalMsg();
+    setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+  }
+
+  function closeLoginModal() {
+    document.getElementById('loginModal').classList.add('hidden');
+  }
+
+  function hideModalMsg() {
+    document.getElementById('modalMsg1').className = 'modal-msg';
+    document.getElementById('modalMsg1').textContent = '';
+    document.getElementById('modalMsg2').className = 'modal-msg';
+    document.getElementById('modalMsg2').textContent = '';
+  }
+
+  async function sendOTP() {
+    if (!sb) {
+      showMsg('modalMsg1', 'Sistem pengesahan tidak dapat diakses sekejap.', 'error'); return;
     }
-  }
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email || !email.includes('@')) {
+      showMsg('modalMsg1', 'Sila masukkan alamat emel yang sah ya nak.', 'error'); return;
+    }
+    const btn = document.getElementById('sendOtpBtn');
+    btn.disabled = true;
+    btn.textContent = 'Menghantar…';
 
-  // CORE CHAT ACTIONS & INTERACTION LOGIC
-  function selectStyle(element, styleKey) {
-    document.querySelectorAll(".style-card").forEach(c => c.classList.remove("active"));
-    element.classList.add("active");
-    
-    // Sync to prompt selectors inside the chat app area
-    const chips = document.querySelectorAll(".style-chip");
-    chips.forEach(chip => {
-      const txt = chip.textContent.toLowerCase();
-      if(txt.includes(styleKey) || (styleKey==='sihat' && txt.includes('sihat'))) {
-        setStyle(chip, styleKey);
-      }
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true }
     });
-  }
 
-  function setStyle(element, styleKey) {
-    document.querySelectorAll(".style-chip").forEach(c => c.classList.remove("active"));
-    element.classList.add("active");
-    activeStyle = styleKey;
-  }
+    btn.disabled = false;
+    btn.textContent = 'Hantar Kod →';
 
-  function askQuestion(text) {
-    document.getElementById("chatInput").value = text;
-    scrollToChat();
-    sendMessage();
-  }
-
-  function sendMessage() {
-    const input = document.getElementById("chatInput");
-    const msgText = input.value.trim();
-    if(!msgText) return;
-
-    if(!isSubscribed && remainingFreeQuestions <= 0) {
-      applyPaywallOverlay();
+    if (error) {
+      showMsg('modalMsg1', 'Alamak, ada masalah. Cuba semula ya: ' + error.message, 'error');
       return;
     }
 
-    // Render User Message UI Bubble
-    appendMessage(msgText, true);
-    input.value = "";
+    otpEmail = email;
+    document.getElementById('otpSubText').textContent =
+      `Ibu dah hantar kod 6 digit ke ${email}. Cepat cek ya, jangan lambat! Kod sah selama 10 minit.`;
+    document.getElementById('modalStep1').style.display = 'none';
+    document.getElementById('modalStep2').style.display = 'block';
+    setTimeout(() => document.getElementById('loginOtp').focus(), 100);
+  }
 
-    // Render Typing Prompt Indicator
-    showTypingIndicator();
+  async function verifyOTP() {
+    if (!sb) return;
+    const token = document.getElementById('loginOtp').value.trim();
+    if (token.length !== 6) {
+      showMsg('modalMsg2', 'Kod mesti 6 digit. Semak semula ya nak.', 'error'); return;
+    }
+    const btn = document.getElementById('verifyOtpBtn');
+    btn.disabled = true;
+    btn.textContent = 'Menyemak…';
 
-    // Call Vercel endpoint or fake API generation stream response 
-    setTimeout(() => {
-      hideTypingIndicator();
-      const answer = generateMockMotherlyResponse(msgText, activeStyle);
-      appendMessage(answer, false);
-      deductQuota();
-      
-      if(!isSubscribed && remainingFreeQuestions <= 0) {
-        setTimeout(() => applyPaywallOverlay(), 800);
-      }
+    const { error } = await sb.auth.verifyOtp({
+      email: otpEmail,
+      token,
+      type: 'email'
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Sahkan Kod ✓';
+
+    if (error) {
+      showMsg('modalMsg2', 'Kod salah atau dah tamat. Cuba semula ya: ' + error.message, 'error');
+      return;
+    }
+
+    showMsg('modalMsg2', 'Berjaya! Selamat datang anak 🎉', 'success');
+    setTimeout(async () => {
+      closeLoginModal();
+      await loadUserProfile();
+      checkSubscriptionAndPaywall();
     }, 1200);
   }
 
-  function appendMessage(text, isUser) {
-    const container = document.getElementById("chatMessages");
-    const msgDiv = document.createElement("div");
-    msgDiv.className = isUser ? "msg user" : "msg";
-
-    msgDiv.innerHTML = `
-      <div class="msg-avatar">${isUser ? 'A' : 'I'}</div>
-      <div class="msg-bubble">${text}</div>
-    `;
-    container.appendChild(msgDiv);
-    container.scrollTop = container.scrollHeight;
+  async function resendOTP() {
+    if (!sb) return;
+    await sb.auth.signInWithOtp({ email: otpEmail, options: { shouldCreateUser: true } });
+    showMsg('modalMsg2', 'Kod baru dah dihantar semula ke ' + otpEmail, 'success');
   }
 
-  function showTypingIndicator() {
-    const container = document.getElementById("chatMessages");
-    const ind = document.createElement("div");
-    ind.className = "msg typing-container";
-    ind.id = "typingIndicator";
-    ind.innerHTML = `
-      <div class="msg-avatar">I</div>
-      <div class="typing-bubble">
-        <div class="typing"><span></span><span></span><span></span></div>
-      </div>
-    `;
-    container.appendChild(ind);
-    container.scrollTop = container.scrollHeight;
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'modal-msg ' + type;
   }
 
-  function hideTypingIndicator() {
-    const ind = document.getElementById("typingIndicator");
-    if(ind) ind.remove();
+  // ── Style controls ───────────────────────────────────────
+  function setStyle(el, style) {
+    document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentStyle = style;
   }
 
-  // MOTHERLY SMART RESPONSE SIMULATOR (Until Vercel Edge Server is connected)
-  function generateMockMotherlyResponse(input, style) {
-    let lower = input.toLowerCase();
-    let response = "";
-
-    if (lower.includes("rendang")) {
-      response = `<span class="recipe-title">Petua Rendang Tak Kering Amat Awet 🏡</span>
-      Allahu, rendang kering sangat sbb api kuat sangat tu nak! Kalau ikut gaya <strong>${style}</strong>, kunci utama kena sabar renek api perlahan.<br>
-      <ul>
-        <li>Guna santan pekat segar, jangan jimat.</li>
-        <li>Bila kuah mula pekat, kecilkan api paling minima macam lilin.</li>
-        <li>Kacau setiap 10 minit biar minyak pecah cantik menyelubungi daging.</li>
-      </ul>
-      <div class="tip-box">💡 Jangan letak kerisik awal sangat nak, nanti hangit bawah periuk!</div>`;
-    } else if (lower.includes("carbonara")) {
-      response = `<span class="recipe-title">Carbonara Bajet Anak Asrama 💰</span>
-      Boleh sangat nak! Memandangkan anak tengah pakai mod <strong>${style}</strong>, tak payah pakai whipping cream mahal-mahal tu.<br>
-      <ul>
-        <li>Beli susu kotak penuh krim tulen (RM3.50).</li>
-        <li>Satu keping keju hancur kepingan (RM1.00).</li>
-        <li>Tumis bawang besar dengan cili padi sikit bagi kick melayu!</li>
-      </ul>
-      <div class="tip-box">💡 Tepung gandum satu sudu dikacau awal dengan mentega buat kuah pekat pekat berkrim!</div>`;
-    } else {
-      response = `Aduhai anak Ibu, soalan bagus sangat tu. Kalau ikut petua masakan gaya <strong>${style}</strong>, asas paling penting kena pastikan bahan tumisan betul-betul masak pecah minyak dulu baru rasa dia naik tinggi, jangan gopoh tau.<br><br>Ada apa lagi nak Ibu tolong semakkan kat dapur tu? Bagitahu je.`;
-    }
-    return response;
+  function selectStyle(el, style) {
+    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentStyle = style;
+    document.querySelectorAll('.style-chip').forEach(c => {
+      if(c.getAttribute('onclick').includes(style)) c.classList.add('active');
+      else c.classList.remove('active');
+    });
   }
 
-  // PAYWALL SYSTEM CONTROL
-  function applyPaywallOverlay() {
-    const windowBox = document.querySelector(".chat-window");
-    if(document.getElementById("paywallOverlayId")) return;
+  // ── Navigation ───────────────────────────────────────────
+  function scrollToChat() {
+    document.getElementById('chat-section').scrollIntoView({behavior:'smooth'});
+    setTimeout(() => document.getElementById('chatInput').focus(), 600);
+  }
 
-    const overlay = document.createElement("div");
-    overlay.className = "paywall-overlay";
-    overlay.id = "paywallOverlayId";
+  function askQuestion(q) {
+    scrollToChat();
+    setTimeout(() => {
+      document.getElementById('chatInput').value = q;
+      sendMessage();
+    }, 700);
+  }
 
-    if(currentUser) {
+  // ── Message rendering ────────────────────────────────────
+  function addMessage(role, content, isHTML=false) {
+    const msgs = document.getElementById('chatMessages');
+    const div  = document.createElement('div');
+    div.className = 'msg' + (role === 'user' ? ' user' : '');
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.textContent = role === 'user' ? 'A' : 'I';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    if (isHTML) bubble.innerHTML = content;
+    else bubble.textContent = content;
+    div.appendChild(avatar);
+    div.appendChild(bubble);
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return bubble;
+  }
+
+  function showTyping() {
+    const msgs = document.getElementById('chatMessages');
+    const div  = document.createElement('div');
+    div.className = 'msg';
+    div.id = 'typingIndicator';
+    div.innerHTML = `<div class="msg-avatar">I</div><div class="typing-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+  }
+
+  function formatResponse(text) {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>')
+      .replace(/Tips Ibu:|Tips ibu:/gi,
+        '<div class="tip-box"><strong>Tips Ibu:</strong></div>')
+      .replace(/(\*\s.*?)(?=<br>|$)/g, '• $1');
+  }
+
+  // ── Paywall Core Interface ──
+  function showPaywallInChat() {
+    if (paywallShown) return;
+    paywallShown = true;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'paywall-overlay';
+    overlay.id = 'paywallOverlay';
+
+    if (currentUser) {
       overlay.innerHTML = `
-        <h4>Kuota Percuma Dah Habis, Anak 😢</h4>
-        <p>Ibu seronok sangat dapat sembang &amp; ajar anak masak tadi. Jom langgan pelan penuh RM1/bulan sahaja untuk sambung sembang tanpa had dengan Ibu.</p>
+        <h4>Anak nak terus tanya Ibu? 😊</h4>
+        <p>20 soalan percuma dah habis. Langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had — murah dari beli santan sekotak.</p>
         <div class="paywall-btn-row">
-          <button class="unlock-btn" onclick="redirectToPayment()">Langgan Penuh (RM1) 💖</button>
+          <button class="unlock-btn" onclick="goToPayment()">Bayar RM2 Sekarang ✦</button>
         </div>
+        <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 5 soalan lagi dulu →</span>
       `;
     } else {
       overlay.innerHTML = `
-        <h4>Sembang Penuh Dengan Ibu 👩‍🍳</h4>
-        <p>Anak dah tengok cara Ibu ajar? Jom masuk akaun atau daftar untuk dapatkan baki 20 soalan percuma serta-merta atau akses tanpa had.</p>
+        <h4>Anak nak terus tanya Ibu? 😊</h4>
+        <p>20 soalan percuma dah habis. Log masuk dulu — lepas tu langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had.</p>
         <div class="paywall-btn-row">
-          <button class="login-btn" onclick="openLoginModal()">Log Masuk Emel</button>
-          <button class="unlock-btn" onclick="redirectToPayment()">Langgan Terus RM1</button>
+          <button class="login-btn" onclick="openLoginModal()">🔑 Log Masuk</button>
+          <button class="unlock-btn" onclick="openLoginModal()">Langgan RM1/bulan ✦</button>
         </div>
-        <span class="skip-link" onclick="removePaywallOverlay(); remainingFreeQuestions=3; updateChatSubtitle();">Cuba baki 3 soalan lagi</span>
+        <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 5 soalan lagi dulu →</span>
       `;
     }
-    windowBox.appendChild(overlay);
+
+    document.querySelector('.chat-window').appendChild(overlay);
   }
 
-  function removePaywallOverlay() {
-    const overlay = document.getElementById("paywallOverlayId");
-    if(overlay) overlay.remove();
+  function grantExtraMessages() {
+    hidePaywall();
+    msgCount = FREE_MSG_LIMIT - 5;
+    saveCount();
+    document.getElementById('chatInput').focus();
   }
 
-  // SCROLL ANIMATIONS INTERSECTION OBSERVER
-  function setupScrollAnimations() {
-    const faders = document.querySelectorAll(".fade-up");
-    const options = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
-    
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          observer.unobserve(entry.target);
-        }
+  function goToPayment() {
+    if (!currentUser) { openLoginModal(); return; }
+    const paymentUrl = `${TOYYIBPAY_BASE_URL}?email=${encodeURIComponent(currentUser.email)}`;
+    window.open(paymentUrl, '_blank');
+  }
+
+  function handleSubscribePricing() {
+    if (!currentUser) { openLoginModal(); return; }
+    goToPayment();
+  }
+
+  // ── Build system prompt ──────────────────────────────────
+  function buildSystemPrompt() {
+    let extra = '';
+    if (!isSubscribed() && msgCount >= SOFT_NUDGE_AT) {
+      extra = `\n\nSPECIAL INSTRUCTION FOR THIS REPLY ONLY: At the very end of your response, selitkan satu ayat pendek yang sangat natural dalam tone Ibu Malaysia — sebut pasal langganan RM1 sebulan untuk tanya tanpa had. Mesti rasa macam Ibu cakap sendiri, bukan macam iklan. Guna shortform dan particles Ibu. Contoh: "Ohh ya nak, kalau nk tanya Ibu lagi banyak, ada langganan RM1 je sebulan tu — murah lahhh kannnn 😊" atau "Ha, kmu tau x Ibu blh layan kmu tanya tanpa had — RM1 sebulan je tau, murah je tu"`;
+    }
+    return SYSTEM_PROMPT.replace('{STYLE}', currentStyle) + extra;
+  }
+
+  function isSubscribed() {
+    if (!userProfile) return false;
+    if (!userProfile.is_subscribed) return false;
+    if (userProfile.subscription_end) {
+      return new Date(userProfile.subscription_end) > new Date();
+    }
+    return true;
+  }
+
+  // ── Save chat log to Supabase ────────────────────────────
+  async function saveChatLog(userMsg, ibuReply) {
+    if (!currentUser || !sb) return;
+    try {
+      await sb.from('chat_logs').insert({
+        user_id: currentUser.id,
+        user_message: userMsg,
+        ibu_reply: ibuReply,
+        style: currentStyle
       });
-    }, options);
-
-    faders.forEach(f => observer.observe(f));
+    } catch(e) { }
   }
 
-  // TOYYIBPAY REDIRECT ACTION
-  function redirectToPayment() {
-    const activeEmail = currentUser?.email || "";
-    
-    if (!activeEmail) {
-      alert("Sila log masuk/daftar emel anak terlebih dahulu sebelum melanggan.");
-      openLoginModal();
+  // ── Increment question count in Supabase ─────────────────
+  async function incrementQuestionCount() {
+    msgCount++;
+    saveCount();
+    if (!currentUser || !sb) return;
+    try {
+      const currentCount = userProfile?.question_count || 0;
+      await sb.from('profiles')
+        .update({ question_count: currentCount + 1 })
+        .eq('id', currentUser.id);
+      if (userProfile) userProfile.question_count = currentCount + 1;
+    } catch(e) { }
+  }
+
+  // ── Main send ────────────────────────────────────────────
+  async function sendMessage() {
+    const input   = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const msg     = input.value.trim();
+    if (!msg || isTyping) return;
+
+    if (!isSubscribed() && msgCount >= FREE_MSG_LIMIT) {
+      showPaywallInChat();
       return;
     }
 
-    document.getElementById('billUserEmail').value = activeEmail;
-    document.getElementById('billUserRef').value = 'SUB_' + Date.now();
-    document.getElementById('toyyibpayForm').submit();
+    input.value = '';
+    isTyping    = true;
+    sendBtn.disabled = true;
+
+    addMessage('user', msg);
+    await incrementQuestionCount();
+
+    conversationHistory.push({ role: 'user', content: msg });
+    showTyping();
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system: buildSystemPrompt(),
+          messages: conversationHistory
+        })
+      });
+
+      const data  = await response.json();
+      removeTyping();
+
+      const reply = data.content?.[0]?.text || 'Alamak nak, ada masalah sikit. Cuba tanya semula ya!';
+      conversationHistory.push({ role: 'assistant', content: reply });
+
+      const bubble = addMessage('assistant', '', true);
+      bubble.innerHTML = formatResponse(reply);
+
+      saveChatLog(msg, reply);
+
+      if (!isSubscribed() && msgCount >= FREE_MSG_LIMIT) {
+        setTimeout(showPaywallInChat, 800);
+      }
+
+    } catch(e) {
+      removeTyping();
+      addMessage('assistant', 'Alamak, Ibu ada masalah teknikal sekejap. Cuba tanya balik ya nak! 😅', true);
+    }
+
+    isTyping = false;
+    sendBtn.disabled = false;
+    document.getElementById('chatMessages').scrollTop = 9999;
   }
 
-  function scrollToChat() {
-    document.getElementById('chat-section').scrollIntoView({ behavior: 'smooth' });
-  }
-</script>
+  document.getElementById('loginModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLoginModal();
+  });
 
-</body>
-</html>
+  // Intersection Observer for animation handling
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
