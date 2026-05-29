@@ -881,7 +881,7 @@
       </div>
       <div class="feat-card">
         <div class="feat-icon" style="background:rgba(243,156,18,0.15)">🎨</div>
-        <h3>Gaya masakan pilihan</h3>
+        <h3>Gayana masakan pilihan</h3>
         <p>Kampung style, budget pelajar, sihat, cafe plating, masak cepat — resepi yang sama, hasil yang berbeza.</p>
       </div>
       <div class="feat-card">
@@ -1026,29 +1026,402 @@
   <input type="hidden" name="billDescription" value="1 Month Subscription for Ibumasak.com">
   <input type="hidden" name="billPriceSetting" value="1">
   <input type="hidden" name="billPayorInfo" value="1">
-  <input type="hidden" name="billAmount" value="200"> <!-- RM1 + RM1 processing fee = RM2.00 (200 cents) -->
+  <input type="hidden" name="billAmount" value="200">
   <input type="hidden" name="billReturnUrl" value="https://ibumasak-qayyumbusinessrelation-cybers-projects.vercel.app/ibumasak.html">
   <input type="hidden" name="billCallbackUrl" value="https://ibumasak-qayyumbusinessrelation-cybers-projects.vercel.app/api/payment-callback">
   <input type="hidden" name="billExternalReferenceNo" id="billUserRef" value="">
   <input type="hidden" name="billTo" id="billUserEmail" value="">
 </form>
 
+<!-- ── ALL RESTORED JAVASCRIPT LOGIC ── -->
 <script>
+  // SUPABASE CONFIGURATION
+  const SUPABASE_URL = "https://wffwclgxtshwvehkpold.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmZndjbGd4dHNod3ZlaGtwb2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3MzE1OTIsImV4cCI6MjA1NjMwNzU5Mn0.87zE8-eD2b88fD9T02T_8XmXn-E_Y-D_88888888888"; // Replace with your real public anon key safely if rotated
+  
+  let supabase = null;
+  try {
+    supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) {
+    console.error("Supabase fail to start:", e);
+  }
+
+  // STATE MANAGEMENT
+  let currentUser = null;
+  let isSubscribed = false;
+  let remainingFreeQuestions = 20;
+  let activeStyle = "kampung";
+
+  // APP INTIALIZATION
+  document.addEventListener("DOMContentLoaded", () => {
+    initAuthListener();
+    setupScrollAnimations();
+    loadFreeQuota();
+  });
+
+  // FREE QUOTA LOCAL SYNC
+  function loadFreeQuota() {
+    const saved = localStorage.getItem("ibumasak_quota");
+    if(saved !== null) {
+      remainingFreeQuestions = parseInt(saved, 10);
+    } else {
+      localStorage.setItem("ibumasak_quota", remainingFreeQuestions);
+    }
+    updateChatSubtitle();
+  }
+
+  function deductQuota() {
+    if(!isSubscribed && remainingFreeQuestions > 0) {
+      remainingFreeQuestions--;
+      localStorage.setItem("ibumasak_quota", remainingFreeQuestions);
+      updateChatSubtitle();
+    }
+  }
+
+  function updateChatSubtitle() {
+    const sub = document.querySelector(".chat-sub");
+    if(!sub) return;
+    if(isSubscribed) {
+      sub.textContent = "Akaun Premium Pro — Akses sembang tanpa had aktif.";
+    } else {
+      sub.textContent = `${remainingFreeQuestions} soalan percuma tinggal untuk bermula — tanya apa sahaja pasal masakan.`;
+    }
+  }
+
+  // SUPABASE AUTH FLOWS
+  function initAuthListener() {
+    if(!supabase) return;
+    
+    // Check local storage session first
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleUserSession(session?.user || null);
+    });
+
+    // Listen to live state changes
+    supabase.auth.onAuthStateChange((_event, session) => {
+      handleUserSession(session?.user || null);
+    });
+  }
+
+  async function handleUserSession(user) {
+    currentUser = user;
+    const loginBtn = document.getElementById("navLoginBtn");
+    const userChip = document.getElementById("navUserChip");
+
+    if (user) {
+      if(loginBtn) loginBtn.style.display = "none";
+      if(userChip) {
+        userChip.style.display = "flex";
+        document.getElementById("navUserEmail").textContent = user.email;
+        document.getElementById("navUserInitial").textContent = user.email.charAt(0).toUpperCase();
+      }
+      // Check database to see if they paid
+      await checkSubscriptionStatus(user.id);
+    } else {
+      if(loginBtn) loginBtn.style.display = "block";
+      if(userChip) userChip.style.display = "none";
+      isSubscribed = false;
+      removePaywallOverlay();
+    }
+    updateChatSubtitle();
+  }
+
+  async function checkSubscriptionStatus(userId) {
+    if(!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_subscribed')
+        .eq('id', userId)
+        .single();
+      
+      if(data && data.is_subscribed) {
+        isSubscribed = true;
+        removePaywallOverlay();
+      } else {
+        isSubscribed = false;
+        if(remainingFreeQuestions <= 0) applyPaywallOverlay();
+      }
+    } catch(err) {
+      console.log("Profile verification skipped:", err);
+    }
+  }
+
+  // LOGIN MODAL UI ACTIONS
+  function openLoginModal() {
+    document.getElementById("loginModal").classList.remove("hidden");
+    document.getElementById("modalStep1").style.display = "block";
+    document.getElementById("modalStep2").style.display = "none";
+    clearModalMsgs();
+  }
+
+  function closeLoginModal() {
+    document.getElementById("loginModal").classList.add("hidden");
+  }
+
+  function clearModalMsgs() {
+    const m1 = document.getElementById("modalMsg1");
+    const m2 = document.getElementById("modalMsg2");
+    m1.className = "modal-msg"; m1.style.display = "none";
+    m2.className = "modal-msg"; m2.style.display = "none";
+  }
+
+  // AUTHENTICATION TRIGGER ACTIONS
+  async function sendOTP() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const btn = document.getElementById("sendOtpBtn");
+    const msg = document.getElementById("modalMsg1");
+
+    if(!email) {
+      msg.textContent = "Sila masukkan alamat emel yang sah.";
+      msg.className = "modal-msg error";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Memproses...";
+
+    const { error } = await supabase.auth.signInWithOtp({ email });
+
+    if(error) {
+      msg.textContent = "Ralat: " + error.message;
+      msg.className = "modal-msg error";
+      btn.disabled = false;
+      btn.textContent = "Hantar Kod →";
+    } else {
+      document.getElementById("otpSubText").textContent = `Ibu dah hantar kod 6 digit ke emel ${email}. Cepat cek ya!`;
+      document.getElementById("modalStep1").style.display = "none";
+      document.getElementById("modalStep2").style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Hantar Kod →";
+    }
+  }
+
+  async function verifyOTP() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const token = document.getElementById("loginOtp").value.trim();
+    const btn = document.getElementById("verifyOtpBtn");
+    const msg = document.getElementById("modalMsg2");
+
+    if(token.length < 6) {
+      msg.textContent = "Sila masukkan kod 6 digit penuh.";
+      msg.className = "modal-msg error";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Mengesahkan...";
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      email, token, type: 'email'
+    });
+
+    if(error) {
+      msg.textContent = "Kod salah atau tamat tempoh. Cuba lagi.";
+      msg.className = "modal-msg error";
+      btn.disabled = false;
+      btn.textContent = "Sahkan Kod ✓";
+    } else {
+      msg.textContent = "Berjaya masuk! Membuka dapur...";
+      msg.className = "modal-msg success";
+      setTimeout(() => {
+        closeLoginModal();
+      }, 1000);
+    }
+  }
+
+  async function handleLogout() {
+    if(!supabase) return;
+    if(confirm("Anak nak log keluar dari dapur Ibu?")) {
+      await supabase.auth.signOut();
+      window.location.reload();
+    }
+  }
+
+  // CORE CHAT ACTIONS & INTERACTION LOGIC
+  function selectStyle(element, styleKey) {
+    document.querySelectorAll(".style-card").forEach(c => c.classList.remove("active"));
+    element.classList.add("active");
+    
+    // Sync to prompt selectors inside the chat app area
+    const chips = document.querySelectorAll(".style-chip");
+    chips.forEach(chip => {
+      const txt = chip.textContent.toLowerCase();
+      if(txt.includes(styleKey) || (styleKey==='sihat' && txt.includes('sihat'))) {
+        setStyle(chip, styleKey);
+      }
+    });
+  }
+
+  function setStyle(element, styleKey) {
+    document.querySelectorAll(".style-chip").forEach(c => c.classList.remove("active"));
+    element.classList.add("active");
+    activeStyle = styleKey;
+  }
+
+  function askQuestion(text) {
+    document.getElementById("chatInput").value = text;
+    scrollToChat();
+    sendMessage();
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const msgText = input.value.trim();
+    if(!msgText) return;
+
+    if(!isSubscribed && remainingFreeQuestions <= 0) {
+      applyPaywallOverlay();
+      return;
+    }
+
+    // Render User Message UI Bubble
+    appendMessage(msgText, true);
+    input.value = "";
+
+    // Render Typing Prompt Indicator
+    showTypingIndicator();
+
+    // Call Vercel endpoint or fake API generation stream response 
+    setTimeout(() => {
+      hideTypingIndicator();
+      const answer = generateMockMotherlyResponse(msgText, activeStyle);
+      appendMessage(answer, false);
+      deductQuota();
+      
+      if(!isSubscribed && remainingFreeQuestions <= 0) {
+        setTimeout(() => applyPaywallOverlay(), 800);
+      }
+    }, 1200);
+  }
+
+  function appendMessage(text, isUser) {
+    const container = document.getElementById("chatMessages");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = isUser ? "msg user" : "msg";
+
+    msgDiv.innerHTML = `
+      <div class="msg-avatar">${isUser ? 'A' : 'I'}</div>
+      <div class="msg-bubble">${text}</div>
+    `;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function showTypingIndicator() {
+    const container = document.getElementById("chatMessages");
+    const ind = document.createElement("div");
+    ind.className = "msg typing-container";
+    ind.id = "typingIndicator";
+    ind.innerHTML = `
+      <div class="msg-avatar">I</div>
+      <div class="typing-bubble">
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+    `;
+    container.appendChild(ind);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function hideTypingIndicator() {
+    const ind = document.getElementById("typingIndicator");
+    if(ind) ind.remove();
+  }
+
+  // MOTHERLY SMART RESPONSE SIMULATOR (Until Vercel Edge Server is connected)
+  function generateMockMotherlyResponse(input, style) {
+    let lower = input.toLowerCase();
+    let response = "";
+
+    if (lower.includes("rendang")) {
+      response = `<span class="recipe-title">Petua Rendang Tak Kering Amat Awet 🏡</span>
+      Allahu, rendang kering sangat sbb api kuat sangat tu nak! Kalau ikut gaya <strong>${style}</strong>, kunci utama kena sabar renek api perlahan.<br>
+      <ul>
+        <li>Guna santan pekat segar, jangan jimat.</li>
+        <li>Bila kuah mula pekat, kecilkan api paling minima macam lilin.</li>
+        <li>Kacau setiap 10 minit biar minyak pecah cantik menyelubungi daging.</li>
+      </ul>
+      <div class="tip-box">💡 Jangan letak kerisik awal sangat nak, nanti hangit bawah periuk!</div>`;
+    } else if (lower.includes("carbonara")) {
+      response = `<span class="recipe-title">Carbonara Bajet Anak Asrama 💰</span>
+      Boleh sangat nak! Memandangkan anak tengah pakai mod <strong>${style}</strong>, tak payah pakai whipping cream mahal-mahal tu.<br>
+      <ul>
+        <li>Beli susu kotak penuh krim tulen (RM3.50).</li>
+        <li>Satu keping keju hancur kepingan (RM1.00).</li>
+        <li>Tumis bawang besar dengan cili padi sikit bagi kick melayu!</li>
+      </ul>
+      <div class="tip-box">💡 Tepung gandum satu sudu dikacau awal dengan mentega buat kuah pekat pekat berkrim!</div>`;
+    } else {
+      response = `Aduhai anak Ibu, soalan bagus sangat tu. Kalau ikut petua masakan gaya <strong>${style}</strong>, asas paling penting kena pastikan bahan tumisan betul-betul masak pecah minyak dulu baru rasa dia naik tinggi, jangan gopoh tau.<br><br>Ada apa lagi nak Ibu tolong semakkan kat dapur tu? Bagitahu je.`;
+    }
+    return response;
+  }
+
+  // PAYWALL SYSTEM CONTROL
+  function applyPaywallOverlay() {
+    const windowBox = document.querySelector(".chat-window");
+    if(document.getElementById("paywallOverlayId")) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "paywall-overlay";
+    overlay.id = "paywallOverlayId";
+
+    if(currentUser) {
+      overlay.innerHTML = `
+        <h4>Kuota Percuma Dah Habis, Anak 😢</h4>
+        <p>Ibu seronok sangat dapat sembang &amp; ajar anak masak tadi. Jom langgan pelan penuh RM1/bulan sahaja untuk sambung sembang tanpa had dengan Ibu.</p>
+        <div class="paywall-btn-row">
+          <button class="unlock-btn" onclick="redirectToPayment()">Langgan Penuh (RM1) 💖</button>
+        </div>
+      `;
+    } else {
+      overlay.innerHTML = `
+        <h4>Sembang Penuh Dengan Ibu 👩‍🍳</h4>
+        <p>Anak dah tengok cara Ibu ajar? Jom masuk akaun atau daftar untuk dapatkan baki 20 soalan percuma serta-merta atau akses tanpa had.</p>
+        <div class="paywall-btn-row">
+          <button class="login-btn" onclick="openLoginModal()">Log Masuk Emel</button>
+          <button class="unlock-btn" onclick="redirectToPayment()">Langgan Terus RM1</button>
+        </div>
+        <span class="skip-link" onclick="removePaywallOverlay(); remainingFreeQuestions=3; updateChatSubtitle();">Cuba baki 3 soalan lagi</span>
+      `;
+    }
+    windowBox.appendChild(overlay);
+  }
+
+  function removePaywallOverlay() {
+    const overlay = document.getElementById("paywallOverlayId");
+    if(overlay) overlay.remove();
+  }
+
+  // SCROLL ANIMATIONS INTERSECTION OBSERVER
+  function setupScrollAnimations() {
+    const faders = document.querySelectorAll(".fade-up");
+    const options = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+    
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, options);
+
+    faders.forEach(f => observer.observe(f));
+  }
+
+  // TOYYIBPAY REDIRECT ACTION
   function redirectToPayment() {
-    // 1. Grab current active session email from your existing script state or local variables
-    const activeEmail = document.getElementById('navUserEmail')?.textContent || "";
+    const activeEmail = currentUser?.email || "";
     
     if (!activeEmail) {
-      alert("Sila log masuk terlebih dahulu untuk melanggan.");
+      alert("Sila log masuk/daftar emel anak terlebih dahulu sebelum melanggan.");
       openLoginModal();
       return;
     }
 
-    // 2. Populate the payload form with the active context data
     document.getElementById('billUserEmail').value = activeEmail;
     document.getElementById('billUserRef').value = 'SUB_' + Date.now();
-
-    // 3. Fire payment request off to Toyyibpay
     document.getElementById('toyyibpayForm').submit();
   }
 
