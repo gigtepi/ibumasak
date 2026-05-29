@@ -419,6 +419,7 @@
     border: 1.5px solid var(--border);
     border-radius: 24px;
     overflow: hidden;
+    position: relative;
   }
   .chat-topbar {
     background: var(--ink);
@@ -558,66 +559,69 @@
   .send-btn:hover { background:var(--chili-dark);transform:scale(1.05); }
   .send-btn:disabled { background:var(--ink-muted);cursor:not-allowed;transform:none; }
 
-  /* ── PAYWALL ── */
+  /* ── PAYWALL OVERLAY (Kini diletakkan di kedudukan absolute penuh tingkap sembang) ── */
   .paywall-overlay {
-    padding:1.5rem;
-    background:var(--cream);
-    border-top:1px solid var(--border);
-    text-align:center;
+    position: absolute; inset: 0; z-index: 200;
+    background: rgba(253, 246, 236, 0.96);
+    backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2rem; text-align: center;
   }
   .paywall-overlay h4 {
     font-family:'Lora',serif;
-    font-size:1.1rem;
+    font-size:1.4rem;
     font-weight:600;
     color:var(--ink);
-    margin-bottom:.3rem;
+    margin-bottom:.5rem;
   }
   .paywall-overlay p {
-    font-size:.82rem;
-    color:var(--ink-muted);
-    margin-bottom:1rem;
-    line-height:1.5;
+    font-size:.95rem;
+    color:var(--ink-soft);
+    margin-bottom:1.5rem;
+    max-width: 440px;
+    line-height:1.6;
     font-weight:300;
   }
   .paywall-overlay .unlock-btn {
     background:var(--chili);
     color:white;
     border:none;
-    padding:.7rem 2rem;
+    padding:.8rem 2.5rem;
     border-radius:100px;
     font-family:'DM Sans',sans-serif;
-    font-size:.9rem;
+    font-size:1rem;
     font-weight:500;
     cursor:pointer;
-    transition:background .2s;
-    display:inline-flex;align-items:center;gap:.4rem;
+    box-shadow: 0 4px 14px rgba(192,57,43,0.3);
+    transition: all .2s;
+    display:inline-flex;align-items:center;gap:.5rem;
   }
-  .paywall-overlay .unlock-btn:hover { background:var(--chili-dark); }
+  .paywall-overlay .unlock-btn:hover { background:var(--chili-dark); transform: translateY(-1px); }
   .paywall-overlay .login-btn {
     background: transparent;
     color: var(--chili);
     border: 1.5px solid var(--chili);
-    padding:.65rem 1.75rem;
+    padding:.75rem 2rem;
     border-radius:100px;
     font-family:'DM Sans',sans-serif;
-    font-size:.9rem;
+    font-size:1rem;
     font-weight:500;
     cursor:pointer;
     transition:all .2s;
-    display:inline-flex;align-items:center;gap:.4rem;
+    display:inline-flex;align-items:center;gap:.5rem;
     margin-right:.5rem;
   }
   .paywall-overlay .login-btn:hover { background:var(--chili); color:white; }
   .paywall-overlay .skip-link {
     display:block;
-    margin-top:.75rem;
-    font-size:.78rem;
+    margin-top:1.25rem;
+    font-size:.85rem;
     color:var(--ink-muted);
     cursor:pointer;
     text-decoration:underline;
     text-underline-offset:3px;
   }
-  .paywall-btn-row { display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; }
+  .paywall-btn-row { display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap; }
 
   /* ── LOGIN MODAL ── */
   .modal-backdrop {
@@ -783,9 +787,7 @@
 <nav>
   <div class="logo">Ibu<span>masak</span></div>
   <div class="nav-right">
-    <!-- shown when logged out -->
     <button class="nav-login-btn" id="navLoginBtn" onclick="openLoginModal()" style="display:none">Log Masuk</button>
-    <!-- shown when logged in -->
     <div class="nav-user-chip" id="navUserChip" onclick="handleLogout()" style="display:none" title="Klik untuk log keluar">
       <div class="user-dot" id="navUserInitial">A</div>
       <span class="user-email" id="navUserEmail"></span>
@@ -801,10 +803,9 @@
     <button class="modal-close" onclick="closeLoginModal()">✕</button>
     <div class="modal-logo">Ibu<span>masak</span></div>
 
-    <!-- Step 1: Email -->
     <div id="modalStep1">
       <h3>Log masuk atau daftar</h3>
-      <p class="modal-sub">Masukkan emel anak — Ibu akan hantar kod 6 digit untuk sahkan. Tiada kata laluan diperlukan.</p>
+      <p class="modal-sub">Masukkan emel anak — Ibu akan hantar kod 6 digit untuk sahkan. Tiada kata lauam diperlukan.</p>
       <div class="modal-msg" id="modalMsg1"></div>
       <label for="loginEmail">Alamat Emel</label>
       <input type="email" id="loginEmail" placeholder="anak@email.com" autocomplete="email">
@@ -812,7 +813,6 @@
       <p class="modal-footer-note">Dengan meneruskan, anak bersetuju dengan Terma Perkhidmatan kami.<br>Tiada kata laluan. Tiada spam.</p>
     </div>
 
-    <!-- Step 2: OTP -->
     <div id="modalStep2" style="display:none">
       <h3>Masukkan kod rahsia 🔑</h3>
       <p class="modal-sub" id="otpSubText">Ibu dah hantar kod 6 digit ke emel anak. Cepat cek ya, jangan lambat!</p>
@@ -1031,9 +1031,8 @@
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZnJsaHVud25lZ2V4YXhueWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzcwOTIsImV4cCI6MjA5MTE1MzA5Mn0.Qq9nSABzsNc_exMo44xGtY1VahY3bxanvym4IEyTevQ';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  // ── ToyyibPay (fill in after account setup) ─────────────
-  // Replace this with your actual ToyyibPay bill link once your account is ready
-  const TOYYIBPAY_URL = 'https://toyyibpay.com/ibumasaksubscribe';
+  // URL Penuh Toyyibpay beserta Dynamic User Email Query Parameter
+  const TOYYIBPAY_BASE_URL = 'https://toyyibpay.com/ibumasaksubscribe';
 
   // ── System Prompt ────────────────────────────────────────
   const SYSTEM_PROMPT = `Kamu adalah Ibumasak — AI masakan yang bercakap dan berasa betul-betul macam seorang ibu Malaysia yang dah masak berpuluh tahun, tahu dapur dari A sampai Z, dan sayang gila kat anak-anak kamu.
@@ -1140,32 +1139,36 @@ HAD IBU:
 
   // ── Auth State ───────────────────────────────────────────
   let currentUser     = null;
-  let userProfile     = null;  // { question_count, is_subscribed, ... }
+  let userProfile     = null;  
   let otpEmail        = '';
 
   // ── Session State ────────────────────────────────────────
-  let msgCount = parseInt(sessionStorage.getItem('im_count') || '0');
+  let msgCount = parseInt(localStorage.getItem('im_count') || '0');
   let currentStyle = 'kampung';
   let conversationHistory = [];
   let isTyping = false;
   let paywallShown = false;
+  let realtimeChannel = null;
 
-  function saveCount() { sessionStorage.setItem('im_count', msgCount); }
+  function saveCount() { localStorage.setItem('im_count', msgCount); }
 
-  // ── Init: listen for auth changes ────────────────────────
+  // ── Init: Listen to auth & Realtime synchronization ──────
   sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
       currentUser = session.user;
       await loadUserProfile();
       updateNavForUser(currentUser);
-      // Sync msgCount with Supabase question_count
+      setupRealtimeSubscription();
+
       if (userProfile && userProfile.question_count > msgCount) {
         msgCount = userProfile.question_count;
         saveCount();
       }
+      checkSubscriptionAndPaywall();
     } else {
       currentUser  = null;
       userProfile  = null;
+      if(realtimeChannel) sb.removeChannel(realtimeChannel);
       updateNavForGuest();
     }
   });
@@ -1177,7 +1180,30 @@ HAD IBU:
       .select('question_count, is_subscribed, subscription_end')
       .eq('id', currentUser.id)
       .single();
-    userProfile = data;
+    if(data) userProfile = data;
+  }
+
+  // Mengawasi perubahan status pembayaran daripada pelayan webhook secara automatik (Masa Nyata)
+  function setupRealtimeSubscription() {
+    if (!currentUser) return;
+    realtimeChannel = sb.channel(`public:profiles:id=eq.${currentUser.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${currentUser.id}` }, payload => {
+        userProfile = payload.new;
+        if (userProfile.question_count > msgCount) {
+          msgCount = userProfile.question_count;
+          saveCount();
+        }
+        checkSubscriptionAndPaywall();
+      })
+      .subscribe();
+  }
+
+  function checkSubscriptionAndPaywall() {
+    if (isSubscribed()) {
+      hidePaywall();
+    } else if (msgCount >= FREE_MSG_LIMIT) {
+      showPaywallInChat();
+    }
   }
 
   // ── Nav update ───────────────────────────────────────────
@@ -1189,32 +1215,29 @@ HAD IBU:
     document.getElementById('navUserInitial').textContent = initial;
     document.getElementById('navUserEmail').textContent   = email.length > 20
       ? email.substring(0, 17) + '…' : email;
-
-    // If user has active subscription, reset any paywall
-    if (userProfile?.is_subscribed) {
-      hidePaywall();
-    }
   }
 
   function updateNavForGuest() {
     document.getElementById('navLoginBtn').style.display  = 'inline-block';
     document.getElementById('navUserChip').style.display  = 'none';
+    const overlay = document.getElementById('paywallOverlay');
+    if (!overlay && msgCount >= FREE_MSG_LIMIT) showPaywallInChat();
   }
 
   function hidePaywall() {
     const overlay = document.getElementById('paywallOverlay');
     if (overlay) overlay.remove();
-    const inputArea = document.getElementById('chatInputArea');
-    if (inputArea) { inputArea.style.display = 'flex'; }
     paywallShown = false;
   }
 
   async function handleLogout() {
     if (!confirm('Nak log keluar ke, anak?')) return;
     await sb.auth.signOut();
-    sessionStorage.clear();
+    localStorage.clear();
     msgCount = 0;
     saveCount();
+    hidePaywall();
+    location.reload();
   }
 
   // ── Login Modal ──────────────────────────────────────────
@@ -1278,7 +1301,7 @@ HAD IBU:
     btn.disabled = true;
     btn.textContent = 'Menyemak…';
 
-    const { data, error } = await sb.auth.verifyOtp({
+    const { error } = await sb.auth.verifyOtp({
       email: otpEmail,
       token,
       type: 'email'
@@ -1293,12 +1316,10 @@ HAD IBU:
     }
 
     showMsg('modalMsg2', 'Berjaya! Selamat datang anak 🎉', 'success');
-    setTimeout(() => {
+    setTimeout(async () => {
       closeLoginModal();
-      // If they were blocked by paywall, check subscription now
-      if (paywallShown) {
-        handleAfterLogin();
-      }
+      await loadUserProfile();
+      checkSubscriptionAndPaywall();
     }, 1200);
   }
 
@@ -1313,34 +1334,6 @@ HAD IBU:
     el.className = 'modal-msg ' + type;
   }
 
-  // Called after successful login from paywall
-  async function handleAfterLogin() {
-    await loadUserProfile();
-    if (userProfile?.is_subscribed) {
-      // Already subscribed — remove paywall
-      hidePaywall();
-      addMessage('assistant', 'Alhamdulillah, anak dah log masuk! Ibu sedia nak sambung jawab soalan ya 😊', true);
-    } else {
-      // Logged in but not subscribed — show payment option
-      updatePaywallToPayment();
-    }
-  }
-
-  function updatePaywallToPayment() {
-    const overlay = document.getElementById('paywallOverlay');
-    if (!overlay) return;
-    overlay.innerHTML = `
-      <h4>Dah log masuk! Langgan sekarang 😊</h4>
-      <p>Hanya <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) — murah dari santan sekotak. Tanya Ibu tanpa had.</p>
-      <div class="paywall-btn-row">
-        <button class="unlock-btn" onclick="goToPayment()">
-          Bayar RM1 Sekarang ✦
-        </button>
-      </div>
-      <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 5 soalan lagi dulu →</span>
-    `;
-  }
-
   // ── Style controls ───────────────────────────────────────
   function setStyle(el, style) {
     document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
@@ -1351,16 +1344,17 @@ HAD IBU:
   function selectStyle(el, style) {
     document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
+    currentStyle = style;
+    document.querySelectorAll('.style-chip').forEach(c => {
+      if(c.getAttribute('onclick').includes(style)) c.classList.add('active');
+      else c.classList.remove('active');
+    });
   }
 
   // ── Navigation ───────────────────────────────────────────
   function scrollToChat() {
     document.getElementById('chat-section').scrollIntoView({behavior:'smooth'});
     setTimeout(() => document.getElementById('chatInput').focus(), 600);
-  }
-
-  function scrollToPricing() {
-    document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'});
   }
 
   function askQuestion(q) {
@@ -1415,20 +1409,16 @@ HAD IBU:
       .replace(/(\*\s.*?)(?=<br>|$)/g, '• $1');
   }
 
-  // ── Paywall ──────────────────────────────────────────────
+  // ── Paywall Core Interface ──
   function showPaywallInChat() {
     if (paywallShown) return;
     paywallShown = true;
-
-    // Hide input
-    document.getElementById('chatInputArea').style.display = 'none';
 
     const overlay = document.createElement('div');
     overlay.className = 'paywall-overlay';
     overlay.id = 'paywallOverlay';
 
     if (currentUser) {
-      // Logged in but not subscribed → go straight to payment
       overlay.innerHTML = `
         <h4>Anak nak terus tanya Ibu? 😊</h4>
         <p>20 soalan percuma dah habis. Langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had — murah dari beli santan sekotak.</p>
@@ -1438,7 +1428,6 @@ HAD IBU:
         <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 5 soalan lagi dulu →</span>
       `;
     } else {
-      // Not logged in → ask to log in first
       overlay.innerHTML = `
         <h4>Anak nak terus tanya Ibu? 😊</h4>
         <p>20 soalan percuma dah habis. Log masuk dulu — lepas tu langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had.</p>
@@ -1451,13 +1440,10 @@ HAD IBU:
     }
 
     document.querySelector('.chat-window').appendChild(overlay);
-    document.getElementById('chatMessages').scrollTop = 9999;
   }
 
   function grantExtraMessages() {
-    document.getElementById('paywallOverlay').remove();
-    document.getElementById('chatInputArea').style.display = 'flex';
-    paywallShown = false;
+    hidePaywall();
     msgCount = FREE_MSG_LIMIT - 5;
     saveCount();
     document.getElementById('chatInput').focus();
@@ -1465,12 +1451,14 @@ HAD IBU:
 
   function goToPayment() {
     if (!currentUser) { openLoginModal(); return; }
-    window.open(TOYYIBPAY_URL, '_blank');
+    // Hantar parameter emel unik ke Toyyibpay bagi tujuan penjejakan automasi webhook pelayan belakang
+    const paymentUrl = `${TOYYIBPAY_BASE_URL}?email=${encodeURIComponent(currentUser.email)}`;
+    window.open(paymentUrl, '_blank');
   }
 
   function handleSubscribePricing() {
     if (!currentUser) { openLoginModal(); return; }
-    window.open(TOYYIBPAY_URL, '_blank');
+    goToPayment();
   }
 
   // ── Build system prompt ──────────────────────────────────
@@ -1485,7 +1473,6 @@ HAD IBU:
   function isSubscribed() {
     if (!userProfile) return false;
     if (!userProfile.is_subscribed) return false;
-    // Check subscription hasn't expired
     if (userProfile.subscription_end) {
       return new Date(userProfile.subscription_end) > new Date();
     }
@@ -1502,18 +1489,21 @@ HAD IBU:
         ibu_reply: ibuReply,
         style: currentStyle
       });
-    } catch(e) { /* silent fail — chat continues */ }
+    } catch(e) { }
   }
 
   // ── Increment question count in Supabase ─────────────────
   async function incrementQuestionCount() {
+    msgCount++;
+    saveCount();
     if (!currentUser) return;
     try {
+      const currentCount = userProfile?.question_count || 0;
       await sb.from('profiles')
-        .update({ question_count: (userProfile?.question_count || 0) + 1 })
+        .update({ question_count: currentCount + 1 })
         .eq('id', currentUser.id);
-      if (userProfile) userProfile.question_count = (userProfile.question_count || 0) + 1;
-    } catch(e) { /* silent fail */ }
+      if (userProfile) userProfile.question_count = currentCount + 1;
+    } catch(e) { }
   }
 
   // ── Main send ────────────────────────────────────────────
@@ -1523,10 +1513,7 @@ HAD IBU:
     const msg     = input.value.trim();
     if (!msg || isTyping) return;
 
-    // If subscribed, allow unlimited
-    if (isSubscribed()) {
-      // fall through — no limit
-    } else if (msgCount >= FREE_MSG_LIMIT) {
+    if (!isSubscribed() && msgCount >= FREE_MSG_LIMIT) {
       showPaywallInChat();
       return;
     }
@@ -1536,8 +1523,6 @@ HAD IBU:
     sendBtn.disabled = true;
 
     addMessage('user', msg);
-    msgCount++;
-    saveCount();
     await incrementQuestionCount();
 
     conversationHistory.push({ role: 'user', content: msg });
@@ -1562,10 +1547,8 @@ HAD IBU:
       const bubble = addMessage('assistant', '', true);
       bubble.innerHTML = formatResponse(reply);
 
-      // Save to Supabase (non-blocking)
       saveChatLog(msg, reply);
 
-      // Show paywall after reply if limit hit and not subscribed
       if (!isSubscribed() && msgCount >= FREE_MSG_LIMIT) {
         setTimeout(showPaywallInChat, 800);
       }
@@ -1580,20 +1563,18 @@ HAD IBU:
     document.getElementById('chatMessages').scrollTop = 9999;
   }
 
-  // ── Close modal on backdrop click ────────────────────────
   document.getElementById('loginModal').addEventListener('click', function(e) {
     if (e.target === this) closeLoginModal();
   });
 
-  // ── Scroll animations ────────────────────────────────────
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-  // ── Boot: show nav login button for guests ────────────────
-  // (onAuthStateChange handles the rest)
-  updateNavForGuest();
+  if (msgCount >= FREE_MSG_LIMIT && !currentUser) {
+    showPaywallInChat();
+  }
 </script>
 </body>
 </html>
