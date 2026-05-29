@@ -1,7 +1,3 @@
-*(Typing the `/` automatically creates the `api` folder for you!)*
-4. Now, move down to the file editor box and **paste the following backend code**:
-
-```javascript
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
