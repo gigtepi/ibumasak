@@ -933,7 +933,7 @@
   <div class="chat-inner fade-up">
     <div class="section-label">Cuba Cakap Dengan Ibu</div>
     <h2>Tanya Ibu Sekarang</h2>
-    <p class="chat-sub">20 soalan percuma untuk bermula — tanya apa sahaja pasal masakan.</p>
+    <p class="chat-sub">7 soalan percuma untuk bermula — tanya apa sahaja pasal masakan.</p>
 
     <div class="chat-window">
       <div class="chat-topbar">
@@ -984,7 +984,7 @@
         <div class="amount">RM0 <span>/ bulan</span></div>
         <h3>Cuba Dulu</h3>
         <ul class="price-list">
-          <li>20 soalan percuma</li>
+          <li>7 soalan percuma</li>
           <li>Akses semua gaya masakan</li>
           <li>Resepi penuh &amp; tips</li>
         </ul>
@@ -1127,13 +1127,14 @@ HAD IBU:
 - Kalau anak buat benda bahaya (ayam x masak habis, simpan bahan salah cara) — WAJIB tegur dengan tegas dulu sebelum bagi tips. Ni pasal kesihatan, Ibu x main-main.`;
 
   // ── Config ───────────────────────────────────────────────
-  const FREE_MSG_LIMIT = 20;
-  const SOFT_NUDGE_AT  = FREE_MSG_LIMIT - 2; // 18
+  const FREE_MSG_LIMIT = 7;
+  const SOFT_NUDGE_AT  = FREE_MSG_LIMIT - 2; // Ibu starts gently mentioning RM1 at question 5
 
   // ── Auth State ───────────────────────────────────────────
   let currentUser     = null;
   let userProfile     = null;  
   let otpEmail        = '';
+  let pendingPayment  = false; // true when user clicked "Langgan" but had to log in first
 
   // ── Session State ────────────────────────────────────────
   let msgCount = parseInt(localStorage.getItem('im_count') || '0');
@@ -1158,7 +1159,15 @@ HAD IBU:
           msgCount = userProfile.question_count;
           saveCount();
         }
-        checkSubscriptionAndPaywall();
+        // Re-render paywall for logged-in state (old guest version may still be showing)
+        hidePaywall();
+        if (pendingPayment && !isSubscribed()) {
+          pendingPayment = false;
+          showPaywallInChat();
+          goToPayment(); // user clicked "Langgan" before logging in — continue straight to payment
+        } else {
+          checkSubscriptionAndPaywall();
+        }
       } else {
         currentUser  = null;
         userProfile  = null;
@@ -1423,21 +1432,21 @@ HAD IBU:
     if (currentUser) {
       overlay.innerHTML = `
         <h4>Anak nak terus tanya Ibu? 😊</h4>
-        <p>20 soalan percuma dah habis. Langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had — murah dari beli santan sekotak.</p>
+        <p>7 soalan percuma dah habis. Langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had — murah dari beli santan sekotak.</p>
         <div class="paywall-btn-row">
           <button class="unlock-btn" onclick="goToPayment()">Bayar RM2 Sekarang ✦</button>
         </div>
-        <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 5 soalan lagi dulu →</span>
+        <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 3 soalan lagi dulu →</span>
       `;
     } else {
       overlay.innerHTML = `
         <h4>Anak nak terus tanya Ibu? 😊</h4>
-        <p>20 soalan percuma dah habis. Log masuk dulu — lepas tu langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had.</p>
+        <p>7 soalan percuma dah habis. Log masuk dulu — lepas tu langgan <strong>RM1 sebulan</strong> (+ RM1 caj pemprosesan) untuk tanya tanpa had.</p>
         <div class="paywall-btn-row">
           <button class="login-btn" onclick="openLoginModal()">🔑 Log Masuk</button>
-          <button class="unlock-btn" onclick="openLoginModal()">Langgan RM1/bulan ✦</button>
+          <button class="unlock-btn" onclick="startSubscribeFlow()">Langgan RM1/bulan ✦</button>
         </div>
-        <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 5 soalan lagi dulu →</span>
+        <span class="skip-link" onclick="grantExtraMessages()">Nak cuba 3 soalan lagi dulu →</span>
       `;
     }
 
@@ -1451,7 +1460,7 @@ HAD IBU:
     }
     localStorage.setItem('im_bonus_used', '1');
     hidePaywall();
-    msgCount = FREE_MSG_LIMIT - 5;
+    msgCount = FREE_MSG_LIMIT - 3; // bonus: 3 extra questions
     saveCount();
     document.getElementById('chatInput').focus();
   }
@@ -1480,8 +1489,13 @@ HAD IBU:
     }
   }
 
+  function startSubscribeFlow() {
+    pendingPayment = true;
+    openLoginModal();
+  }
+
   function handleSubscribePricing() {
-    if (!currentUser) { openLoginModal(); return; }
+    if (!currentUser) { pendingPayment = true; openLoginModal(); return; }
     goToPayment();
   }
 
