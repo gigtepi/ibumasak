@@ -1025,8 +1025,7 @@
   // Safe instantiation referencing the window library global handle explicitly
   const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
 
-  // URL Penuh Toyyibpay beserta Dynamic User Email Query Parameter
-  const TOYYIBPAY_BASE_URL = 'https://toyyibpay.com/ibumasaksubscribe';
+  // Pembayaran kini melalui /api/payment (Toyyibpay createBill API)
 
   // ── System Prompt ────────────────────────────────────────
   const SYSTEM_PROMPT = `Kamu adalah Ibumasak — AI masakan yang bercakap dan berasa betul-betul macam seorang ibu Malaysia yang dah masak berpuluh tahun, tahu dapur dari A sampai Z, dan sayang gila kat anak-anak kamu.
@@ -1446,16 +1445,39 @@ HAD IBU:
   }
 
   function grantExtraMessages() {
+    if (localStorage.getItem('im_bonus_used')) {
+      alert('Anak dah guna bonus tu dah 😅 Langgan RM1 je sebulan, murah lahhh!');
+      return;
+    }
+    localStorage.setItem('im_bonus_used', '1');
     hidePaywall();
     msgCount = FREE_MSG_LIMIT - 5;
     saveCount();
     document.getElementById('chatInput').focus();
   }
 
-  function goToPayment() {
+  async function goToPayment() {
     if (!currentUser) { openLoginModal(); return; }
-    const paymentUrl = `${TOYYIBPAY_BASE_URL}?email=${encodeURIComponent(currentUser.email)}`;
-    window.open(paymentUrl, '_blank');
+
+    const payBtn = document.querySelector('#paywallOverlay .unlock-btn');
+    if (payBtn) { payBtn.disabled = true; payBtn.textContent = 'Sekejap ya nak…'; }
+
+    try {
+      const res = await fetch('/api/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentUser.email, userId: currentUser.id })
+      });
+      const data = await res.json();
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        throw new Error(data.error || 'no paymentUrl');
+      }
+    } catch (e) {
+      if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'Bayar RM2 Sekarang ✦'; }
+      alert('Alamak, ada masalah dengan pembayaran. Cuba semula sekejap lagi ya nak 🙏');
+    }
   }
 
   function handleSubscribePricing() {
@@ -1572,3 +1594,38 @@ HAD IBU:
   // Intersection Observer for animation handling
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── Payment return handling ──────────────────────────────
+  // Toyyibpay redirects back to ibumasak.com/?payment=success after payment.
+  // The webhook (/api/payment-callback) flips is_subscribed in Supabase;
+  // here we poll the profile until it reflects, then unlock the chat.
+  (function handlePaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') !== 'success') return;
+    history.replaceState({}, '', window.location.pathname);
+    scrollToChat();
+    addMessage('assistant', 'Sekejap ya nak, Ibu tengah semak pembayaran anak… ⏳');
+
+    let attempts = 0;
+    const poll = setInterval(async () => {
+      attempts++;
+      if (currentUser) {
+        await loadUserProfile();
+        if (isSubscribed()) {
+          clearInterval(poll);
+          hidePaywall();
+          addMessage('assistant', 'Yeayyy, pembayaran berjaya! 🎉 Terima kasih sayang. Sekarang anak blh tanya Ibu tanpa had — jom, nk masak apa hari ni? 🍳');
+          return;
+        }
+      }
+      if (attempts >= 20) {
+        clearInterval(poll);
+        addMessage('assistant', 'Hmm, Ibu belum nampak pengesahan bayaran lagi. Kalau dh bayar, refresh page ni sekejap lagi ya nak. Kalau masih x jadi, emel kami ye 🙏');
+      }
+    }, 3000);
+  })();
+</script>
+</body>
+</html>
